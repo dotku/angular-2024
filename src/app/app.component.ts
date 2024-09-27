@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -13,22 +14,37 @@ export class AppComponent {
   items = [
     {
       id: '001',
-      content: 'content',
+      title: 'content',
     },
     {
       id: '002',
-      content: 'content 2',
+      title: 'content 2',
     },
   ];
   content = 'new content 2024';
   title = 'angular-2024';
+  constructor(private http: HttpClient) {}
+  ngOnInit(): void {
+    this.fetchTodos();
+  }
+  fetchTodos(): void {
+    const apiUrl = 'https://jsonplaceholder.typicode.com/todos';
+    this.http.get<any[]>(apiUrl).subscribe(
+      (data) => {
+        this.items = data.filter((_item, idx) => idx < 10);
+      },
+      (error) => {
+        console.error('Error fetching data:', error);
+      }
+    );
+  }
   isArray(obj: any) {
     return Array.isArray(obj);
   }
   addItem() {
     this.items.push({
       id: new Date().getTime().toString(),
-      content: this.content,
+      title: this.content,
     });
     this.content = '';
   }
